@@ -37,25 +37,53 @@ def add_timestamp(input_mp4, output_mp4):
     create_srt(stamp, duration, output_mp4 + ".srt")
     # 打开输入视频
     input_stream = ffmpeg.input(input_mp4)
-    # 添加字幕
-    output_stream = ffmpeg.output(input_stream, output_mp4, vf='subtitles=%s' % output_mp4 + ".srt", vcodec='h264_nvenc')
+    # 添加字幕并使用高质量编码参数
+    output_stream = ffmpeg.output(
+        input_stream, 
+        output_mp4, 
+        vf='subtitles=%s' % output_mp4 + ".srt",
+        vcodec='libx264',  # 使用x264编码器
+        crf=18,            # 设置高质量（18是推荐值，范围0-51，数值越小质量越高）
+        preset='slow',     # 使用较慢的预设以获得更好的压缩
+        movflags='+faststart'  # 使视频能够快速开始播放
+    )
     # 运行 FFmpeg 命令
     ffmpeg.run(output_stream, overwrite_output=True)
 
+# 合并mp4
 # 合并mp4
 def concatenate_videos(video_files, output_file):
     # ffmpeg的bug，先转成ts再合并能避免
     ts_files = []
     for vf in video_files:
         ts_file = vf.replace(".mp4", ".ts")
-        ffmpeg.input(vf).output(ts_file, c='copy', format='mpegts', vcodec='h264_nvenc').run(overwrite_output=True)
+        # 添加质量参数
+        ffmpeg.input(vf).output(
+            ts_file, 
+            c='copy', 
+            format='mpegts', 
+            vcodec='libx264',
+            preset='slow',  # 使用较慢的预设以获得更好的压缩
+            crf=18          # 设置高质量
+        ).run(overwrite_output=True)
         ts_files.append(ts_file)
     output_dir = os.path.dirname(os.path.dirname(output_file))
     concat_file = output_file.replace(".mp4", ".concat.txt")
     with open(concat_file, "w", encoding="utf-8") as f:
         for i in ts_files:
             f.write("file " + i.replace("\\", "\\\\") + "\n")
-    ffmpeg.input(concat_file, format="concat", safe=0).output(output_file, c='copy', vcodec='h264_nvenc').run(overwrite_output=True)
+    # 添加质量参数
+    ffmpeg.input(
+        concat_file, 
+        format="concat", 
+        safe=0
+    ).output(
+        output_file, 
+        c='copy', 
+        vcodec='libx264',
+        preset='slow',  # 使用较慢的预设以获得更好的压缩
+        crf=18          # 设置高质量
+    ).run(overwrite_output=True)
     shutil.copy(output_file, output_dir)
 
 # 主流程
