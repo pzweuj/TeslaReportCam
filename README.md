@@ -14,7 +14,7 @@ pip install ffmpeg-python
 pip install pysrt
 ```
 
-全程保持原始清晰度，为了效率使用了GPU，因为广州交警仅支持提交H264，因此用了h264_nvenc。[tesla dashcam](https://github.com/ehendrix23/tesla_dashcam)这个项目挺好用的，但是并不适用于我，可能是ffmpeg的版本原因，单独输出非正面镜头时会有报错。
+全程保持原始清晰度，为了效率使用了GPU，因为广州交警仅支持提交H264，~~因此用了h264_nvenc~~使用libx264，可以获得更佳的清晰度。[tesla dashcam](https://github.com/ehendrix23/tesla_dashcam)这个项目挺好用的，但是并不适用于我，可能是ffmpeg的版本原因，单独输出非正面镜头时会有报错。
 
 
 
@@ -24,9 +24,9 @@ pip install pysrt
 python TeslaReportCam.py <input_dir> <output_dir>
 ```
 
-2，根据视频的秒数来切割视频；
+~~2，根据视频的秒数来切割视频~~建议搭配[Lossless-Cut](https://github.com/mifi/lossless-cut)使用，
 
-3，根据输入的大小尽量压缩视频。
+~~3，根据输入的大小尽量压缩视频~~广州交警公众号现在支持上传200M的视频，可以不压缩了。
 
 
 
