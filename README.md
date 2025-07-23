@@ -6,6 +6,7 @@
 
 
 ## 介绍
+依赖[ffmpeg](https://ffmpeg.org/)，需要安装并放在环境变量里
 
 使用前，先安装以下两个库，基于python3
 
